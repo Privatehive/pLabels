@@ -1,0 +1,25 @@
+{
+  "version": {
+    "major": 1,
+    "minor": 0,
+    "patch": 0,
+    "snapshot": true
+  },
+  "projectName": "pTouchPrint",
+  "projectDescription": "",
+  "projectId": 1712753753,
+  "vendor": "Björn Stresing",
+  "contact": "bjoern.stresing@gmx.de",
+  "domain": "com.github.tereius",
+  "copyrightYear": "2024",
+  "repository": "https://github.com/Tereius/pTouchPrint",
+  "topics": [
+    "Qt",
+    "QML",
+    "P-touch",
+    "Brother",
+    "Label Maker"
+  ],
+  "homepage": "https://github.com/Tereius/pTouchPrint",
+  "license": "GPLv3"
+}
