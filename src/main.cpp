@@ -1,7 +1,7 @@
 #include "AdvancedQmlApplicationEngine.h"
 #include "QtApplicationBase.h"
-#include <QIcon>
 #include <QGuiApplication>
+#include <QIcon>
 #include <QQuickStyle>
 
 #ifdef Q_OS_WINDOWS
@@ -13,8 +13,8 @@ int main(int argc, char **argv) {
 
 	// qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
 	// qputenv("QML_IMPORT_TRACE", "true");
-	//qunsetenv("QT_STYLE_OVERRIDE");
-	//qunsetenv("QT_QUICK_CONTROLS_STYLE");
+	// qunsetenv("QT_STYLE_OVERRIDE");
+	// qunsetenv("QT_QUICK_CONTROLS_STYLE");
 
 	QtApplicationBase<QGuiApplication> app(argc, argv);
 
@@ -44,22 +44,21 @@ int main(int argc, char **argv) {
 
 	AdvancedQmlApplicationEngine qmlEngine;
 	QIcon::setThemeName("material");
-	QQuickStyle::setStyle("Universal");
 
 #ifdef QT_DEBUG
 	auto qmlMainFile = QString("pTouch/pTouch/main.qml");
 	if(QFile::exists(qmlMainFile)) {
 		qInfo() << "QML hot reloading enabled";
 		qmlEngine.setHotReload(true);
-		qmlEngine.loadRootItem(qmlMainFile, false);
+		qmlEngine.loadRootItem(qmlMainFile, true);
 	} else {
 		qmlEngine.setHotReload(false);
-		qmlEngine.loadRootItem("qrc:/qt/qml/pTouch/pTouch/main.qml", false);
+		qmlEngine.loadRootItem("qrc:/qt/qml/pTouch/pTouch/main.qml", true);
 	}
 #else
 	qmlEngine.addImportPath("qrc:/qt/qml");
 	qmlEngine.setHotReload(false);
-	qmlEngine.loadRootItem("qrc:/qt/qml/pTouch/pTouch/main.qml", false);
+	qmlEngine.loadRootItem("qrc:/qt/qml/pTouch/pTouch/main.qml", true);
 #endif
 
 	return app.start();

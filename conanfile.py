@@ -26,7 +26,9 @@ class QtAppBaseConan(ConanFile):
     homepage = jsonInfo["homepage"]
     url = jsonInfo["repository"]
     # ---Requirements---
-    requires = ["qt/6.7.0@%s/stable" % user, "qtappbase/[~1]@%s/snapshot" % user]
+    requires = ["qt/6.7.0@%s/stable" % user,
+                "qtappbase/[~1]@%s/snapshot" % user,
+                "materialrally/[~1]@%s/snapshot" % user]
     tool_requires = ["cmake/3.21.7", "ninja/1.11.1"]
     # ---Sources---
     exports = ["info.json", "LICENSE"]

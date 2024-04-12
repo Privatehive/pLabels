@@ -1,6 +1,7 @@
 include(MaterialIcons)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Qml Quick QuickControls2 Svg)
+find_package(MaterialRally)
 find_package(QtAppBase)
 find_package(PkgConfig)
 pkg_check_modules(libusb REQUIRED libusb-1.0)
@@ -10,6 +11,8 @@ include(AppImage)
 qt_add_library(pTouch STATIC
         libpTouch/gettext.h
         libpTouch/ptouch.h
+        libpTouch/ptouchwrapper.h
+        libpTouch/ptouchwrapper.c
         libpTouch/libptouch.c
 )
 
@@ -27,10 +30,17 @@ qt_add_qml_module(pTouchPrint
         SOURCES
         PrinterManager.cpp
         PrinterManager.h
+        TapeModel.cpp
+        TapeModel.h
+        Roles.h
 
         QML_FILES
         pTouch/main.qml
         pTouch/ResizableRectangle.qml
+        pTouch/Editor.qml
+        pTouch/Landingpage.qml
+        pTouch/TapeSelectDialog.qml
+        pTouch/PrintDialog.qml
         pTouch/Viewport.qml
 )
 
@@ -41,13 +51,18 @@ add_material_icon_theme_resource(pTouchPrint THEME_NAME material ICONS
         printer-check
         printer-off
         printer-alert
+        alert
         text
         file
         qrcode
         barcode
         shape
         image
+        close
+        plus
 )
+
+target_link_qml_module(pTouchPrint PRIVATE MaterialRally)
 
 target_include_directories(pTouchPrint PRIVATE "libpTouch")
 

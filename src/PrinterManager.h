@@ -6,13 +6,13 @@ class Printer {
 	Q_GADGET
 	Q_PROPERTY(QString id MEMBER id)
 	Q_PROPERTY(QString name MEMBER name)
-	Q_PROPERTY(int tapeWidth MEMBER tapeWidth)
+	Q_PROPERTY(int tapeWidthPx MEMBER tapeWidthPx)
 	Q_PROPERTY(bool ready MEMBER ready)
 
  public:
 	QString id;
 	QString name;
-	int tapeWidth; // px
+	int tapeWidthPx;
 	bool ready;
 };
 

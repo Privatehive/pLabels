@@ -1,22 +1,22 @@
 /*
-	ptouch-print - Print labels with images or text on a Brother P-Touch
+  ptouch-print - Print labels with images or text on a Brother P-Touch
 
-	Copyright (C) 2015-2023 Dominic Radermacher <dominic@familie-radermacher.ch>
+  Copyright (C) 2015-2023 Dominic Radermacher <dominic@familie-radermacher.ch>
 
-	This program is free software; you can redistribute it and/or modify it
-	under the terms of the GNU General Public License version 3 as
-	published by the Free Software Foundation
+  This program is free software; you can redistribute it and/or modify it
+  under the terms of the GNU General Public License version 3 as
+  published by the Free Software Foundation
 
-	This program is distributed in the hope that it will be useful, but
-	WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-	See the GNU General Public License for more details.
+  This program is distributed in the hope that it will be useful, but
+  WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  See the GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program; if not, write to the Free Software Foundation,
-	Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software Foundation,
+  Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 */
-
+#pragma once
 #include <stdint.h>
 #ifdef __FreeBSD__
 #include <libusb.h>
@@ -25,64 +25,64 @@
 #endif
 
 struct _pt_tape_info {
-	uint8_t mm;		/* Tape width in mm */
-	uint16_t px;		/* Printing area in px */
-	double margins;		/* default tape margins in mm */
+	uint8_t mm; /* Tape width in mm */
+	uint16_t px; /* Printing area in px */
+	double margins; /* default tape margins in mm */
 };
 
-#define FLAG_NONE		(0)
-#define FLAG_UNSUP_RASTER	(1 << 0)
-#define FLAG_RASTER_PACKBITS	(1 << 1)
-#define FLAG_PLITE		(1 << 2)
-#define FLAG_P700_INIT		(1 << 3)
-#define FLAG_USE_INFO_CMD	(1 << 4)
-#define FLAG_HAS_PRECUT		(1 << 5)
-#define FLAG_D460BT_MAGIC	(1 << 6)
+#define FLAG_NONE (0)
+#define FLAG_UNSUP_RASTER (1 << 0)
+#define FLAG_RASTER_PACKBITS (1 << 1)
+#define FLAG_PLITE (1 << 2)
+#define FLAG_P700_INIT (1 << 3)
+#define FLAG_USE_INFO_CMD (1 << 4)
+#define FLAG_HAS_PRECUT (1 << 5)
+#define FLAG_D460BT_MAGIC (1 << 6)
 
 typedef enum _pt_page_flags {
-	FEED_NONE	= 0x0,
-	FEED_SMALL	= 0x08,
-	FEED_MEDIUM	= 0x0c,
-	FEED_LARGE	= 0x1a,
-	AUTO_CUT	= (1 << 6),
-	MIRROR		= (1 << 7),
+	FEED_NONE = 0x0,
+	FEED_SMALL = 0x08,
+	FEED_MEDIUM = 0x0c,
+	FEED_LARGE = 0x1a,
+	AUTO_CUT = (1 << 6),
+	MIRROR = (1 << 7),
 } pt_page_flags;
 
 struct _pt_dev_info {
-	int vid;		/* USB vendor ID */
-	int pid;		/* USB product ID */
+	int vid; /* USB vendor ID */
+	int pid; /* USB product ID */
 	char *name;
-	int max_px;		/* Maximum pixel width that can be printed */
-	int dpi;		/* Dots per inch of the printhead */
-	//size_t bytes_per_line;
+	int max_px; /* Maximum pixel width that can be printed */
+	int dpi; /* Dots per inch of the printhead */
+	// size_t bytes_per_line;
 	int flags;
 };
 typedef struct _pt_dev_info *pt_dev_info;
 
 struct __attribute__((packed, aligned(4))) _ptouch_stat {
-	uint8_t printheadmark;	// 0x80
-	uint8_t size;		// 0x20
-	uint8_t brother_code;	// "B"
-	uint8_t series_code;	// "0"
+	uint8_t printheadmark; // 0x80
+	uint8_t size; // 0x20
+	uint8_t brother_code; // "B"
+	uint8_t series_code; // "0"
 	uint8_t model;
-	uint8_t country;	// "0"
+	uint8_t country; // "0"
 	uint16_t reserved_1;
-	uint16_t error;		// table 1 and 2
-	uint8_t media_width;	// tape width in mm
-	uint8_t media_type;	// table 4
-	uint8_t ncol;		// 0
-	uint8_t fonts;		// 0
-	uint8_t jp_fonts;	// 0
+	uint16_t error; // table 1 and 2
+	uint8_t media_width; // tape width in mm
+	uint8_t media_type; // table 4
+	uint8_t ncol; // 0
+	uint8_t fonts; // 0
+	uint8_t jp_fonts; // 0
 	uint8_t mode;
-	uint8_t density;	// 0
-	uint8_t media_len;	// table length, always 0
-	uint8_t status_type;	// table 5
+	uint8_t density; // 0
+	uint8_t media_len; // table length, always 0
+	uint8_t status_type; // table 5
 	uint8_t phase_type;
-	uint16_t phase_number;	// table 6
+	uint16_t phase_number; // table 6
 	uint8_t notif_number;
-	uint8_t exp;		// 0
-	uint8_t tape_color;	// table 8
-	uint8_t text_color;	// table 9
+	uint8_t exp; // 0
+	uint8_t tape_color; // table 8
+	uint8_t text_color; // table 9
 	uint32_t hw_setting;
 	uint16_t reserved_2;
 };
@@ -117,6 +117,6 @@ int ptouch_sendraster(ptouch_dev ptdev, uint8_t *data, size_t len);
 void ptouch_rawstatus(uint8_t raw[32]);
 void ptouch_list_supported();
 
-const char* pt_mediatype(unsigned char media_type);
-const char* pt_tapecolor(unsigned char tape_color);
-const char* pt_textcolor(unsigned char text_color);
+const char *pt_mediatype(unsigned char media_type);
+const char *pt_tapecolor(unsigned char tape_color);
+const char *pt_textcolor(unsigned char text_color);

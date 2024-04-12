@@ -95,6 +95,11 @@ int ptouch_open(ptouch_dev *ptdev) {
 		fprintf(stderr, _("out of memory\n"));
 		return -1;
 	}
+
+	(*ptdev)->h = NULL;
+	(*ptdev)->devinfo = NULL;
+	(*ptdev)->status = NULL;
+
 	if(((*ptdev)->devinfo = malloc(sizeof(struct _pt_dev_info))) == NULL) {
 		fprintf(stderr, _("out of memory\n"));
 		return -1;
