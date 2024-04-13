@@ -33,10 +33,12 @@ qt_add_qml_module(pTouchPrint
         TapeModel.cpp
         TapeModel.h
         Roles.h
+        Helper.h
 
         QML_FILES
         pTouch/main.qml
         pTouch/ResizableRectangle.qml
+        pTouch/ResizeGrabber.qml
         pTouch/Editor.qml
         pTouch/Landingpage.qml
         pTouch/TapeSelectDialog.qml

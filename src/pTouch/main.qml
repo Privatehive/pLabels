@@ -10,6 +10,13 @@ Rally.RallyRootPage {
 
     visible: true
 
+    Component.onCompleted: {
+        swipeView.addItem(Rally.Helper.createItem(Qt.resolvedUrl("Editor.qml"),
+                                                  null, {
+                                                      "tapeWidth": 128
+                                                  }))
+    }
+
     function newEditor(tapeWidthPx) {
 
         swipeView.addItem(Rally.Helper.createItem(Qt.resolvedUrl("Editor.qml"),
@@ -114,10 +121,6 @@ Rally.RallyRootPage {
         header: Row {
             TabBar {
                 id: bar
-
-                onCurrentIndexChanged: {
-                    console.log("barrrr " + currentIndex)
-                }
 
                 Repeater {
                     model: swipeView.count
