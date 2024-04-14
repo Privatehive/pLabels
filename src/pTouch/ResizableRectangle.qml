@@ -1,20 +1,37 @@
 import QtQuick
+import QtQuick.Controls
 import pTouch
 
 FocusScope {
 
     id: control
 
+    default property alias contentItem: holder.children
     readonly property size grabberSize: Qt.size(20, 20)
     readonly property int minWidth: grabberSize.width * 2 + 2
     readonly property int minHeight: grabberSize.height * 2 + 2
-    property rect bounds: Qt.rect(0, 0, parent ? parent.width : 999999, parent ? parent.height : 999999)
+    property rect bounds: Qt.rect(0, 0, parent ? parent.width : Number.MAX_VALUE,
+                                  parent ? parent.height : Number.MAX_VALUE)
     property bool activated: false
 
-    readonly property var xAboutToChange: null
-    readonly property var yAboutToChange: null
-    readonly property var widthAboutToChange: null
-    readonly property var heightAboutToChange: null
+    property var leftAboutToChange: left => left
+    property var topAboutToChange: top => top
+    property var rightAboutToChange: right => right
+    property var bottomAboutToChange: bottom => bottom
+
+    implicitHeight: {
+        if (holder.children[0]) {
+            return holder.children[0].implicitHeight
+        }
+        return 0
+    }
+
+    implicitWidth: {
+        if (holder.children[0]) {
+            return holder.children[0].implicitWidth
+        }
+        return 0
+    }
 
     Component.onCompleted: {
         priv.apply(Qt.rect(control.x, control.y, control.width, control.height), true)
@@ -43,6 +60,11 @@ FocusScope {
         onDoubleClicked: {
             control.activated = !control.activated
         }
+    }
+
+    Item {
+        id: holder
+        anchors.fill: parent
     }
 
     // left
@@ -182,6 +204,25 @@ FocusScope {
             const yChanged = rect.y !== control.y || forceChange
             const widthChanged = rect.width !== control.width || forceChange
             const heightChanged = rect.height !== control.height || forceChange
+
+            if (xChanged) {
+                if (control.leftAboutToChange) {
+                    const newx = control.leftAboutToChange(rect.x)
+                    rect.width -= newx - rect.x
+                    rect.x = newx
+                }
+                if (control.rightAboutToChange) {
+                    const newRight = control.rightAboutToChange(rect.x + rect.width)
+                    rect.x = newRight - rect.width
+                }
+            }
+
+            if (widthChanged) {
+                if (control.rightAboutToChange) {
+                    const newRight = control.rightAboutToChange(rect.x + rect.width)
+                    rect.width = newRight - rect.x
+                }
+            }
 
             // clamp to minWidth
             if (rect.width < control.minWidth) {

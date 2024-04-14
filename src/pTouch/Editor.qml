@@ -20,16 +20,7 @@ Page {
 
     function addText() {
         const component = textComponent.createObject(tape, {
-                                                         "text": "Text",
-                                                         "x": 0,
-                                                         "y": 0,
-                                                         "parent": tape,
-                                                         "width": 20,
-                                                         "height": 20,
-                                                         "xAboutToChange": x => {
-
-                                                             return x
-                                                         }
+                                                         "text": "Text"
                                                      })
     }
 
@@ -40,8 +31,15 @@ Page {
 
         ResizableRectangle {
 
-            property string text: ""
+            property alias text: text.text
+
             bounds: Qt.rect(0, 0, tape.width, tape.height)
+            leftAboutToChange: left => {
+                                   return tape.snapLeft(this, left)
+                               }
+            rightAboutToChange: right => {
+                                    return tape.snapRight(this, right)
+                                }
 
             onActivatedChanged: {
                 text.enabled = activated
