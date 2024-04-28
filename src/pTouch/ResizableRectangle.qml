@@ -12,7 +12,8 @@ FocusScope {
     readonly property int minHeight: grabberSize.height * 2 + 2
     property rect bounds: Qt.rect(0, 0, parent ? parent.width : Number.MAX_VALUE,
                                   parent ? parent.height : Number.MAX_VALUE)
-    property bool activated: false
+    property bool selected: false
+    property bool activated: false // when the editing should be possible
     property real inverseScale: parent ? 1 / parent.scale : 1
 
     property var leftAboutToChange: left => left
@@ -42,19 +43,35 @@ FocusScope {
         activated = activeFocus
     }
 
-    Canvas {
+    Item {
         anchors.fill: parent
-        onPaint: {
-            var ctx = getContext("2d")
-            ctx.lineWidth = 1 * control.inverseScale
-            ctx.strokeStyle = "black"
-            ctx.beginPath()
-            ctx.lineTo(width, 0)
-            ctx.lineTo(width, height)
-            ctx.lineTo(0, height)
-            ctx.lineTo(0, 0)
-            ctx.closePath()
-            ctx.stroke()
+        //visible: control.selected
+        Rectangle {
+            anchors.left: parent.left
+            width: 1 * control.inverseScale
+            height: parent.height
+            color: "grey"
+        }
+
+        Rectangle {
+            anchors.top: parent.top
+            height: 1 * control.inverseScale
+            width: parent.width
+            color: "grey"
+        }
+
+        Rectangle {
+            anchors.right: parent.right
+            width: 1 * control.inverseScale
+            height: parent.height
+            color: "grey"
+        }
+
+        Rectangle {
+            anchors.bottom: parent.bottom
+            height: 1 * control.inverseScale
+            width: parent.width
+            color: "grey"
         }
     }
 
@@ -64,9 +81,14 @@ FocusScope {
         color: "transparent"
         cursorShape: Qt.SizeAllCursor
         target: control
+        dragEnabled: false
         onResized: rect => {
                        priv.apply(Qt.rect(rect.x, rect.y, control.width, control.height))
                    }
+        onClicked: {
+
+            //control.selected = !control.selected
+        }
         onDoubleClicked: {
             control.activated = !control.activated
         }
@@ -84,6 +106,7 @@ FocusScope {
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.left
         cursorShape: Qt.SizeHorCursor
+        color: "#4CAF50"
         target: control
         invertWidth: true
         onResized: rect => {
@@ -98,6 +121,7 @@ FocusScope {
         anchors.verticalCenter: parent.top
         anchors.horizontalCenter: parent.left
         cursorShape: Qt.SizeFDiagCursor
+        color: "#03A9F4"
         target: control
         invertWidth: true
         invertHeight: true
@@ -113,6 +137,7 @@ FocusScope {
         anchors.verticalCenter: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
         cursorShape: Qt.SizeVerCursor
+        color: "#4CAF50"
         target: control
         invertHeight: true
         onResized: rect => {
@@ -127,6 +152,7 @@ FocusScope {
         anchors.verticalCenter: parent.top
         anchors.horizontalCenter: parent.right
         cursorShape: Qt.SizeBDiagCursor
+        color: "#03A9F4"
         target: control
         invertHeight: true
         onResized: rect => {
@@ -141,6 +167,7 @@ FocusScope {
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.right
         cursorShape: Qt.SizeHorCursor
+        color: "#4CAF50"
         target: control
         invertHeight: true
         onResized: rect => {
@@ -155,6 +182,7 @@ FocusScope {
         anchors.verticalCenter: parent.bottom
         anchors.horizontalCenter: parent.right
         cursorShape: Qt.SizeFDiagCursor
+        color: "#03A9F4"
         target: control
         onResized: rect => {
                        priv.apply(Qt.rect(control.x, control.y, rect.width, rect.height))
@@ -168,6 +196,7 @@ FocusScope {
         anchors.verticalCenter: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
         cursorShape: Qt.SizeVerCursor
+        color: "#4CAF50"
         target: control
         onResized: rect => {
                        priv.apply(Qt.rect(control.x, control.y, control.width, rect.height))
@@ -181,6 +210,7 @@ FocusScope {
         anchors.verticalCenter: parent.bottom
         anchors.horizontalCenter: parent.left
         cursorShape: Qt.SizeBDiagCursor
+        color: "#03A9F4"
         target: control
         invertWidth: true
         onResized: rect => {

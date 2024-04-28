@@ -26,7 +26,7 @@ void rasterline_setpixel(uint8_t *rasterline, size_t size, int pixel) {
 	rasterline[(size - 1) - (pixel / 8)] |= (uint8_t)(1 << (pixel % 8));
 }
 
-int print_img(ptouch_dev ptdev, const uint8_t *img, int width, int height) {
+int print_img(ptouch_dev ptdev, const uint8_t *img, int width, int height, int bytesPerLine) {
 	int d, x, y, offset, tape_width;
 	uint8_t rasterline[ptdev->devinfo->max_px / 8];
 
@@ -81,10 +81,11 @@ int print_img(ptouch_dev ptdev, const uint8_t *img, int width, int height) {
 		  printf(_("send precut command\n"));
 		}*/
 	}
-	for(x = 0; x < width; x += 1) {
+	for(x = width; x >= 0; x -= 1) {
 		memset(rasterline, 0, sizeof(rasterline));
 		for(y = 0; y < height; y += 1) {
-			if(img[x + height - 1 - y] > 128) {
+			const uint8_t val = img[y * bytesPerLine + x];
+			if(val < 128) {
 				rasterline_setpixel(rasterline, sizeof(rasterline), offset + y);
 			}
 		}

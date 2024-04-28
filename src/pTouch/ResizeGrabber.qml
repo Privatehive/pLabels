@@ -3,11 +3,15 @@ import QtQuick.Controls
 
 Rectangle {
     id: control
-    color: "red"
+    color: "black"
     property alias cursorShape: ma.cursorShape
     property Item target: Item {}
     signal resized(rect rect)
+    signal clicked
     signal doubleClicked
+
+    property bool dragEnabled: true
+
     property bool invertWidth: false
     property bool invertHeight: false
 
@@ -43,8 +47,15 @@ Rectangle {
                                }
 
                                control.resized(Qt.rect(newXy.x, newXy.y, newWidth, newHeight))
+
                                mouse.accepted = true
                            }
+
+        onClicked: {
+            console.warn("clicked")
+            control.clicked()
+        }
+
         onDoubleClicked: {
             control.doubleClicked()
         }

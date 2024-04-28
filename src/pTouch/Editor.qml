@@ -72,6 +72,7 @@ Page {
                 width: parent.width * 1 / scale
                 height: parent.height * 1 / scale
                 transformOrigin: Item.TopLeft
+                renderType: TextEdit.QtRendering
             }
         }
     }

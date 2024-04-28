@@ -3,6 +3,7 @@
 //
 
 #include "PrinterManager.h"
+#include <QPainter>
 extern "C" {
 #include "ptouchwrapper.h"
 }
@@ -45,18 +46,18 @@ void PrinterManager::print(QVariant image) {
 			if(ptouch_init(ptdev) == 0) {
 				if(ptouch_getstatus(ptdev) == 0) {
 					auto tape_width = ptouch_get_tape_width(ptdev);
-					// img.convertTo(QImage::Format_Mono);
-					// img.convertTo(QImage::Format_Grayscale8, Qt::MonoOnly);
-					auto bg = QImage(img.width(), img.height(), QImage::Format_Grayscale8);
-					bg.fill(Qt::black);
-					img.setAlphaChannel(bg);
-					// img.convertTo(QImage::Format_RGB32);
-					img.save("test.png");
-					/*
-					print_img(ptdev, img.constBits(), img.width(), img.height());
+					auto bg = QImage(img.width(), img.height(), QImage::Format_RGB32);
+					bg.fill(Qt::white);
+					QPainter p(&bg);
+					p.setCompositionMode(QPainter::CompositionMode_SourceAtop);
+					p.drawImage(0, 0, img);
+					p.end();
+					bg.convertTo(QImage::Format_Mono, Qt::DiffuseDither | Qt::MonoOnly);
+					bg.convertTo(QImage::Format_Grayscale8);
+					print_img(ptdev, bg.constBits(), bg.width(), bg.height(), bg.bytesPerLine());
 					if(ptouch_eject(ptdev) != 0) {
-					  qWarning() << "eject_failed";
-					}*/
+						qWarning() << "eject_failed";
+					}
 				}
 			}
 		}
