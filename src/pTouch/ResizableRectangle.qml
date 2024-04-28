@@ -35,17 +35,20 @@ FocusScope {
         return 0
     }
 
+    onFocusChanged: {
+        if (!control.focus) {
+            control.activated = false
+            control.selected = false
+        }
+    }
+
     Component.onCompleted: {
         priv.apply(Qt.rect(control.x, control.y, control.width, control.height), true)
     }
 
-    onActiveFocusChanged: {
-        activated = activeFocus
-    }
-
     Item {
         anchors.fill: parent
-        //visible: control.selected
+        visible: control.selected
         Rectangle {
             anchors.left: parent.left
             width: 1 * control.inverseScale
@@ -75,19 +78,32 @@ FocusScope {
         }
     }
 
+
+    /*
+    Label {
+        text: "selected: " + control.selected
+        color: "red"
+    }
+
+    Label {
+        text: "activated: " + control.activated
+        color: "blue"
+        y: 20
+    }*/
+
     // whole
     ResizeGrabber {
         anchors.fill: parent
         color: "transparent"
-        cursorShape: Qt.SizeAllCursor
+        cursorShape: control.selected ? Qt.SizeAllCursor : Qt.PointingHandCursor
         target: control
-        dragEnabled: false
+        dragEnabled: control.selected
         onResized: rect => {
                        priv.apply(Qt.rect(rect.x, rect.y, control.width, control.height))
                    }
         onClicked: {
-
-            //control.selected = !control.selected
+            control.focus = true
+            control.selected = true
         }
         onDoubleClicked: {
             control.activated = !control.activated
@@ -101,6 +117,7 @@ FocusScope {
 
     // left
     ResizeGrabber {
+        visible: control.selected
         width: grabberSize.width * control.inverseScale
         height: grabberSize.height * control.inverseScale
         anchors.verticalCenter: parent.verticalCenter
@@ -116,6 +133,7 @@ FocusScope {
 
     // topleft
     ResizeGrabber {
+        visible: control.selected
         width: grabberSize.width * control.inverseScale
         height: grabberSize.height * control.inverseScale
         anchors.verticalCenter: parent.top
@@ -132,6 +150,7 @@ FocusScope {
 
     // top
     ResizeGrabber {
+        visible: control.selected
         width: grabberSize.width * control.inverseScale
         height: grabberSize.height * control.inverseScale
         anchors.verticalCenter: parent.top
@@ -147,6 +166,7 @@ FocusScope {
 
     // topright
     ResizeGrabber {
+        visible: control.selected
         width: grabberSize.width * control.inverseScale
         height: grabberSize.height * control.inverseScale
         anchors.verticalCenter: parent.top
@@ -162,6 +182,7 @@ FocusScope {
 
     // right
     ResizeGrabber {
+        visible: control.selected
         width: grabberSize.width * control.inverseScale
         height: grabberSize.height * control.inverseScale
         anchors.verticalCenter: parent.verticalCenter
@@ -177,6 +198,7 @@ FocusScope {
 
     // bottomright
     ResizeGrabber {
+        visible: control.selected
         width: grabberSize.width * control.inverseScale
         height: grabberSize.height * control.inverseScale
         anchors.verticalCenter: parent.bottom
@@ -191,6 +213,7 @@ FocusScope {
 
     // bottom
     ResizeGrabber {
+        visible: control.selected
         width: grabberSize.width * control.inverseScale
         height: grabberSize.height * control.inverseScale
         anchors.verticalCenter: parent.bottom
@@ -205,6 +228,7 @@ FocusScope {
 
     // bottomleft
     ResizeGrabber {
+        visible: control.selected
         width: grabberSize.width * control.inverseScale
         height: grabberSize.height * control.inverseScale
         anchors.verticalCenter: parent.bottom

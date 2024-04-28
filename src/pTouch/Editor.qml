@@ -5,26 +5,29 @@ import Qt5Compat.GraphicalEffects
 
 Page {
 
+    id: control
     focusPolicy: "ClickFocus"
-
     objectName: "Editor"
 
-    id: control
     property int tapeWidth: 18 // px
     property bool canSave: false
 
     function grabImage(callback) {
 
+        for (var i = 0; i < tape.children.length; i++) {
+            tape.children[i].focus = false
+        }
         tape.grabImage(callback)
     }
 
     function addText() {
         const component = textComponent.createObject(tape, {
                                                          "text": "Text",
-                                                         "x": 10,
-                                                         "y": 10,
+                                                         "x": tape.width / 2 - 100,
+                                                         "y": 0,
                                                          "width": 200,
-                                                         "height": 100
+                                                         "height": tape.height,
+                                                         "selected": true
                                                      })
     }
 
@@ -78,13 +81,17 @@ Page {
     }
 
     DropShadow {
-        anchors.fill: tape
-        radius: 10
+        anchors.fill: tapBg
+        radius: 12
+        samples: 12 * scale
         color: "#80000000"
-        source: tape
+        source: tapBg
+        transformOrigin: Item.Left
+        scale: zoomSlieder.value
     }
 
     Rectangle {
+        id: tapBg
         color: "white"
         anchors.fill: tape
         transformOrigin: Item.Left

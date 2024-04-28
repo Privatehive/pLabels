@@ -30,29 +30,29 @@ Rectangle {
                        mouse.accepted = true
                    }
         onPositionChanged: mouse => {
-                               const newXy = mapToItem(control.target.parent, Qt.point(mouse.x - pressOrigin.x,
-                                                                                       mouse.y - pressOrigin.y))
-                               let newWidth
-                               if (!control.invertWidth) {
-                                   newWidth = backupSize.width + newXy.x - pressOriginGlobal.x
-                               } else {
-                                   newWidth = backupSize.width + pressOriginGlobal.x - newXy.x
+                               if (control.dragEnabled) {
+                                   const newXy = mapToItem(control.target.parent, Qt.point(mouse.x - pressOrigin.x,
+                                                                                           mouse.y - pressOrigin.y))
+                                   let newWidth
+                                   if (!control.invertWidth) {
+                                       newWidth = backupSize.width + newXy.x - pressOriginGlobal.x
+                                   } else {
+                                       newWidth = backupSize.width + pressOriginGlobal.x - newXy.x
+                                   }
+
+                                   let newHeight
+                                   if (!control.invertHeight) {
+                                       newHeight = backupSize.height + newXy.y - pressOriginGlobal.y
+                                   } else {
+                                       newHeight = backupSize.height + pressOriginGlobal.y - newXy.y
+                                   }
+
+                                   control.resized(Qt.rect(newXy.x, newXy.y, newWidth, newHeight))
                                }
-
-                               let newHeight
-                               if (!control.invertHeight) {
-                                   newHeight = backupSize.height + newXy.y - pressOriginGlobal.y
-                               } else {
-                                   newHeight = backupSize.height + pressOriginGlobal.y - newXy.y
-                               }
-
-                               control.resized(Qt.rect(newXy.x, newXy.y, newWidth, newHeight))
-
                                mouse.accepted = true
                            }
 
         onClicked: {
-            console.warn("clicked")
             control.clicked()
         }
 

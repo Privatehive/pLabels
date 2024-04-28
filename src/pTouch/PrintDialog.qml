@@ -19,8 +19,15 @@ Dialog {
     readonly property var imageUrl: grabResult ? grabResult.url : null
 
     Image {
+        id: image
         source: control.imageUrl
         anchors.centerIn: parent
+
+        Rectangle {
+            anchors.fill: image
+            z: -1
+            color: "white"
+        }
     }
 
     footer: DialogButtonBox {
