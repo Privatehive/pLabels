@@ -1,12 +1,18 @@
 import QtQuick
 import QtQuick.Controls
 
-Control {
+Item {
 
     id: control
 
     property real snapDistanceHorizontal: 10
     property real snapDistanceVertical: 10
+
+    // onChildrenRectChanged doesn't get triggered. This is a woraround
+    readonly property rect childrenRectWorkaround: control.childrenRect
+
+    implicitWidth: control.childrenRectWorkaround.x + control.childrenRectWorkaround.width
+    implicitHeight: control.childrenRectWorkaround.y + control.childrenRectWorkaround.height
 
     function grabImage(callback) {
 
@@ -89,9 +95,5 @@ Control {
             }
         }
         return snapLine
-    }
-
-    background: Rectangle {
-        color: "white"
     }
 }

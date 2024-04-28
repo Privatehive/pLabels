@@ -9,15 +9,34 @@ Dialog {
 
     id: control
 
-    //readonly property ItemGrabResult grabResult: null
-    function showImage(url) {
-        image.source = url
-        console.log("---- " + image.sourceSize.height)
-    }
+    title: qsTr("Print")
+
+    anchors.centerIn: parent
+
+    property var grabResult: null
+
+    readonly property var image: grabResult ? grabResult.image : null
+    readonly property var imageUrl: grabResult ? grabResult.url : null
 
     Image {
-        id: image
-        height: 36 * Screen.pixelDensity //(25.4 * image.sourceSize.height * Screen.pixelDensity) / 180
+        source: control.imageUrl
         anchors.centerIn: parent
+    }
+
+    footer: DialogButtonBox {
+
+        Button {
+            text: qsTr("Print")
+            flat: true
+            onClicked: {
+                PrinterManager.print(control.image)
+            }
+        }
+
+        Button {
+            text: qsTr("Cancel")
+            flat: true
+            DialogButtonBox.buttonRole: DialogButtonBox.RejectRole
+        }
     }
 }

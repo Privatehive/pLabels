@@ -7,12 +7,13 @@ FocusScope {
     id: control
 
     default property alias contentItem: holder.children
-    readonly property size grabberSize: Qt.size(20, 20)
+    readonly property size grabberSize: Qt.size(10, 10)
     readonly property int minWidth: grabberSize.width * 2 + 2
     readonly property int minHeight: grabberSize.height * 2 + 2
     property rect bounds: Qt.rect(0, 0, parent ? parent.width : Number.MAX_VALUE,
                                   parent ? parent.height : Number.MAX_VALUE)
     property bool activated: false
+    property real inverseScale: parent ? 1 / parent.scale : 1
 
     property var leftAboutToChange: left => left
     property var topAboutToChange: top => top
@@ -41,11 +42,20 @@ FocusScope {
         activated = activeFocus
     }
 
-    Rectangle {
+    Canvas {
         anchors.fill: parent
-        border.width: control.activated ? 2 : 1
-        border.color: control.activated ? "blue" : "black"
-        color: "transparent"
+        onPaint: {
+            var ctx = getContext("2d")
+            ctx.lineWidth = 1 * control.inverseScale
+            ctx.strokeStyle = "black"
+            ctx.beginPath()
+            ctx.lineTo(width, 0)
+            ctx.lineTo(width, height)
+            ctx.lineTo(0, height)
+            ctx.lineTo(0, 0)
+            ctx.closePath()
+            ctx.stroke()
+        }
     }
 
     // whole
@@ -69,12 +79,10 @@ FocusScope {
 
     // left
     ResizeGrabber {
-        width: grabberSize.width
-        height: grabberSize.height
+        width: grabberSize.width * control.inverseScale
+        height: grabberSize.height * control.inverseScale
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.left
-        border.width: 2
-        border.color: "blue"
         cursorShape: Qt.SizeHorCursor
         target: control
         invertWidth: true
@@ -85,12 +93,10 @@ FocusScope {
 
     // topleft
     ResizeGrabber {
-        width: grabberSize.width
-        height: grabberSize.height
+        width: grabberSize.width * control.inverseScale
+        height: grabberSize.height * control.inverseScale
         anchors.verticalCenter: parent.top
         anchors.horizontalCenter: parent.left
-        border.width: 2
-        border.color: "blue"
         cursorShape: Qt.SizeFDiagCursor
         target: control
         invertWidth: true
@@ -102,12 +108,10 @@ FocusScope {
 
     // top
     ResizeGrabber {
-        width: grabberSize.width
-        height: grabberSize.height
+        width: grabberSize.width * control.inverseScale
+        height: grabberSize.height * control.inverseScale
         anchors.verticalCenter: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
-        border.width: 2
-        border.color: "blue"
         cursorShape: Qt.SizeVerCursor
         target: control
         invertHeight: true
@@ -118,12 +122,10 @@ FocusScope {
 
     // topright
     ResizeGrabber {
-        width: grabberSize.width
-        height: grabberSize.height
+        width: grabberSize.width * control.inverseScale
+        height: grabberSize.height * control.inverseScale
         anchors.verticalCenter: parent.top
         anchors.horizontalCenter: parent.right
-        border.width: 2
-        border.color: "blue"
         cursorShape: Qt.SizeBDiagCursor
         target: control
         invertHeight: true
@@ -134,12 +136,10 @@ FocusScope {
 
     // right
     ResizeGrabber {
-        width: grabberSize.width
-        height: grabberSize.height
+        width: grabberSize.width * control.inverseScale
+        height: grabberSize.height * control.inverseScale
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.right
-        border.width: 2
-        border.color: "blue"
         cursorShape: Qt.SizeHorCursor
         target: control
         invertHeight: true
@@ -150,12 +150,10 @@ FocusScope {
 
     // bottomright
     ResizeGrabber {
-        width: grabberSize.width
-        height: grabberSize.height
+        width: grabberSize.width * control.inverseScale
+        height: grabberSize.height * control.inverseScale
         anchors.verticalCenter: parent.bottom
         anchors.horizontalCenter: parent.right
-        border.width: 2
-        border.color: "blue"
         cursorShape: Qt.SizeFDiagCursor
         target: control
         onResized: rect => {
@@ -165,12 +163,10 @@ FocusScope {
 
     // bottom
     ResizeGrabber {
-        width: grabberSize.width
-        height: grabberSize.height
+        width: grabberSize.width * control.inverseScale
+        height: grabberSize.height * control.inverseScale
         anchors.verticalCenter: parent.bottom
         anchors.horizontalCenter: parent.horizontalCenter
-        border.width: 2
-        border.color: "blue"
         cursorShape: Qt.SizeVerCursor
         target: control
         onResized: rect => {
@@ -180,12 +176,10 @@ FocusScope {
 
     // bottomleft
     ResizeGrabber {
-        width: grabberSize.width
-        height: grabberSize.height
+        width: grabberSize.width * control.inverseScale
+        height: grabberSize.height * control.inverseScale
         anchors.verticalCenter: parent.bottom
         anchors.horizontalCenter: parent.left
-        border.width: 2
-        border.color: "blue"
         cursorShape: Qt.SizeBDiagCursor
         target: control
         invertWidth: true
@@ -200,18 +194,37 @@ FocusScope {
 
         function apply(rect, forceChange) {
 
+            const leftOutOfBounds = function (rect) {
+                return rect.x < control.bounds.x
+            }
+            const topOutOfBounds = function (rect) {
+                return rect.y < control.bounds.y
+            }
+            const bottomOutOfBounds = function (rect) {
+                return rect.y + rect.height > control.bounds.height
+            }
+            const rightOutOfBounds = function (rect) {
+                return rect.x + rect.width > control.bounds.width
+            }
+
             const xChanged = rect.x !== control.x || forceChange
             const yChanged = rect.y !== control.y || forceChange
             const widthChanged = rect.width !== control.width || forceChange
             const heightChanged = rect.height !== control.height || forceChange
 
+            // --- handle snap ---
+
+
+            /*
             if (xChanged) {
+                let snapped = false
                 if (control.leftAboutToChange) {
                     const newx = control.leftAboutToChange(rect.x)
+                    let snapped = newx !== rect.x
                     rect.width -= newx - rect.x
                     rect.x = newx
                 }
-                if (control.rightAboutToChange) {
+                if (!snapped && control.rightAboutToChange) {
                     const newRight = control.rightAboutToChange(rect.x + rect.width)
                     rect.x = newRight - rect.width
                 }
@@ -224,6 +237,29 @@ FocusScope {
                 }
             }
 
+            if (yChanged) {
+                let snapped = false
+                if (control.topAboutToChange) {
+                    const newy = control.topAboutToChange(rect.y)
+                    let snapped = newy !== rect.y
+                    rect.height -= newy - rect.y
+                    rect.y = newy
+                }
+                if (!snapped && control.bottomAboutToChange) {
+                    const newBottom = control.bottomAboutToChange(rect.y + rect.height)
+                    rect.y = newBottom - rect.height
+                }
+            }
+
+            if (heightChanged) {
+                if (control.bottomAboutToChange) {
+                    const newBottom = control.bottomAboutToChange(rect.y + rect.height)
+                    rect.height = newBottom - rect.y
+                }
+            }
+*/
+            // ------------------
+
             // clamp to minWidth
             if (rect.width < control.minWidth) {
                 rect.x -= control.minWidth - rect.width
@@ -234,19 +270,6 @@ FocusScope {
             if (rect.height < control.minHeight) {
                 rect.y -= control.minHeight - rect.height
                 rect.height = control.minHeight
-            }
-
-            const leftOutOfBounds = function (rect) {
-                return rect.x < control.bounds.x
-            }
-            const topOutOfBounds = function (rect) {
-                return rect.y < control.bounds.y
-            }
-            const bottomOutOfBounds = function (rect) {
-                return rect.y + rect.height > control.bounds.height
-            }
-            const rightOutOfBounds = function (rect) {
-                return rect.x + rect.width > control.bounds.width
             }
 
             if (xChanged) {

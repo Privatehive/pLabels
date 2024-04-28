@@ -1,4 +1,5 @@
 #pragma once
+#include <QImage>
 #include <QObject>
 #include <QtQmlIntegration>
 
@@ -26,6 +27,8 @@ class PrinterManager : public QObject {
  public:
 	explicit PrinterManager(QObject *pParent = nullptr);
 	Printer getPrinter() const;
+
+	Q_INVOKABLE void print(QVariant image);
 
  signals:
 	void printerChanged();

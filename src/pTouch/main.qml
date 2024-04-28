@@ -11,16 +11,14 @@ Rally.RallyRootPage {
     visible: true
 
     Component.onCompleted: {
-        swipeView.addItem(Rally.Helper.createItem(Qt.resolvedUrl("Editor.qml"),
-                                                  null, {
+        swipeView.addItem(Rally.Helper.createItem(Qt.resolvedUrl("Editor.qml"), null, {
                                                       "tapeWidth": 128
                                                   }))
     }
 
     function newEditor(tapeWidthPx) {
 
-        swipeView.addItem(Rally.Helper.createItem(Qt.resolvedUrl("Editor.qml"),
-                                                  null, {
+        swipeView.addItem(Rally.Helper.createItem(Qt.resolvedUrl("Editor.qml"), null, {
                                                       "tapeWidth": tapeWidthPx
                                                   }))
     }
@@ -34,8 +32,7 @@ Rally.RallyRootPage {
                 icon.name: "file"
                 display: AbstractButton.IconOnly
                 onClicked: {
-                    const dialog = Rally.Helper.createDialog(
-                                     Qt.resolvedUrl("TapeSelectDialog.qml"))
+                    const dialog = Rally.Helper.createDialog(Qt.resolvedUrl("TapeSelectDialog.qml"))
                     dialog.onNewDocument.connect(s => newEditor(s))
                 }
             }
@@ -48,8 +45,7 @@ Rally.RallyRootPage {
             ToolButton {
                 icon.name: "content-save"
                 display: AbstractButton.IconOnly
-                enabled: swipeView.currentEditor
-                         && swipeView.currentEditor.canSave
+                enabled: swipeView.currentEditor && swipeView.currentEditor.canSave
             }
 
             ToolButton {
@@ -60,12 +56,9 @@ Rally.RallyRootPage {
                     swipeView.currentEditor.grabImage(grabResult => {
 
                                                           const dialog = Rally.Helper.createDialog(
-                                                              Qt.resolvedUrl(
-                                                                  "PrintDialog.qml"))
-                                                          //dialog.data.push(
-                                                          //    grabResult) // we have to keep the reference alive as long as the dialog lives
-                                                          dialog.showImage(
-                                                              grabResult.url)
+                                                              Qt.resolvedUrl("PrintDialog.qml"), {
+                                                                  "grabResult": grabResult
+                                                              })
                                                       })
                 }
             }
@@ -104,8 +97,7 @@ Rally.RallyRootPage {
         }
 
         ToolButton {
-            text: PrinterManager.printer.ready ? PrinterManager.printer.name : qsTr(
-                                                     "no printer")
+            text: PrinterManager.printer.ready ? PrinterManager.printer.name : qsTr("no printer")
             icon.name: PrinterManager.printer.ready ? "printer-check" : "printer-alert"
             icon.color: PrinterManager.printer.ready ? "green" : "red"
             display: PrinterManager.printer.ready ? AbstractButton.TextBesideIcon : AbstractButton.IconOnly
@@ -152,8 +144,7 @@ Rally.RallyRootPage {
                 icon.name: "plus"
 
                 onClicked: {
-                    swipeView.addItem(landingpageComponent.createObject(
-                                          swipeView))
+                    swipeView.addItem(landingpageComponent.createObject(swipeView))
                 }
             }
         }
@@ -167,8 +158,7 @@ Rally.RallyRootPage {
 
             property Editor currentEditor: {
                 //if (swipeView.currentItem instanceof Editor) { // not working
-                if (swipeView.currentItem
-                        && swipeView.currentItem.objectName === "Editor") {
+                if (swipeView.currentItem && swipeView.currentItem.objectName === "Editor") {
                     return currentItem
                 }
                 return null

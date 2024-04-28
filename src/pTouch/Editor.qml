@@ -20,11 +20,27 @@ Page {
 
     function addText() {
         const component = textComponent.createObject(tape, {
-                                                         "text": "Text"
+                                                         "text": "Text",
+                                                         "x": 10,
+                                                         "y": 10,
+                                                         "width": 200,
+                                                         "height": 100
                                                      })
     }
 
     padding: 0
+
+    header: ToolBar {
+        Row {
+            anchors.fill: parent
+            spacing: 2
+
+            ToolButton {
+                icon.name: "file"
+                display: AbstractButton.IconOnly
+            }
+        }
+    }
 
     Component {
         id: textComponent
@@ -33,13 +49,11 @@ Page {
 
             property alias text: text.text
 
-            bounds: Qt.rect(0, 0, tape.width, tape.height)
-            leftAboutToChange: left => {
-                                   return tape.snapLeft(this, left)
-                               }
-            rightAboutToChange: right => {
-                                    return tape.snapRight(this, right)
-                                }
+            bounds: Qt.rect(0, 0, Number.MAX_VALUE, tape.height)
+            leftAboutToChange: left => tape.snapLeft(this, left)
+            topAboutToChange: top => tape.snapTop(this, top)
+            rightAboutToChange: right => tape.snapRight(this, right)
+            bottomAboutToChange: bottom => tape.snapBottom(this, bottom)
 
             onActivatedChanged: {
                 text.enabled = activated
@@ -69,17 +83,61 @@ Page {
         source: tape
     }
 
+    Rectangle {
+        color: "white"
+        anchors.fill: tape
+        transformOrigin: Item.Left
+        scale: zoomSlieder.value
+    }
+
+    // Only the children of the viewport will be printed (nothing else)
     Viewport {
         id: tape
-        width: parent.width
+        x: -hbar.position * (width * scale)
+        y: -vbar.position * (height * scale)
+        width: implicitWidth
         height: control.tapeWidth
-        anchors.centerIn: parent
-        background: Rectangle {
-            color: "white"
-        }
+        anchors.verticalCenter: parent.verticalCenter
+        transformOrigin: Item.Left
+        scale: zoomSlieder.value
+    }
+
+    ScrollBar {
+        id: vbar
+        hoverEnabled: true
+        active: hovered || pressed
+        orientation: Qt.Vertical
+        size: control.height / (tape.height * tape.scale)
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+    }
+
+    ScrollBar {
+        id: hbar
+        hoverEnabled: true
+        active: hovered || pressed
+        orientation: Qt.Horizontal
+        size: control.width / (tape.width * tape.scale)
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
     }
 
     background: Rectangle {
         color: "grey"
+    }
+
+    footer: ToolBar {
+        height: 30
+        Row {
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.right: parent.right
+            Slider {
+                id: zoomSlieder
+                from: 1
+                to: 3
+            }
+        }
     }
 }

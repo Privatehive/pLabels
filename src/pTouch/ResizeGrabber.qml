@@ -3,8 +3,6 @@ import QtQuick.Controls
 
 Rectangle {
     id: control
-    border.width: 2
-    border.color: "green"
     color: "red"
     property alias cursorShape: ma.cursorShape
     property Item target: Item {}
