@@ -11,14 +11,15 @@ Rally.RallyRootPage {
     visible: true
 
     Component.onCompleted: {
-        swipeView.addItem(Rally.Helper.createItem(Qt.resolvedUrl("Editor.qml"), null, {
+
+        stackView.replace(Rally.Helper.createItem(Qt.resolvedUrl("Editor.qml"), null, {
                                                       "tapeWidth": 128
                                                   }))
     }
 
     function newEditor(tapeWidthPx) {
 
-        swipeView.addItem(Rally.Helper.createItem(Qt.resolvedUrl("Editor.qml"), null, {
+        stackView.replace(Rally.Helper.createItem(Qt.resolvedUrl("Editor.qml"), null, {
                                                       "tapeWidth": tapeWidthPx
                                                   }))
     }
@@ -45,15 +46,15 @@ Rally.RallyRootPage {
             ToolButton {
                 icon.name: "content-save"
                 display: AbstractButton.IconOnly
-                enabled: swipeView.currentEditor && swipeView.currentEditor.canSave
+                enabled: stackView.currentEditor && stackView.currentEditor.canSave
             }
 
             ToolButton {
                 icon.name: "printer"
                 display: AbstractButton.IconOnly
-                enabled: swipeView.currentEditor && PrinterManager.printer.ready
+                enabled: stackView.currentEditor && PrinterManager.printer.ready
                 onClicked: {
-                    swipeView.currentEditor.grabImage(grabResult => {
+                    stackView.currentEditor.grabImage(grabResult => {
 
                                                           const dialog = Rally.Helper.createDialog(
                                                               Qt.resolvedUrl("PrintDialog.qml"), {
@@ -71,9 +72,9 @@ Rally.RallyRootPage {
             ToolButton {
                 icon.name: "text"
                 display: AbstractButton.IconOnly
-                enabled: swipeView.currentEditor
+                enabled: stackView.currentEditor
                 onClicked: {
-                    swipeView.currentEditor.addText()
+                    stackView.currentEditor.addText()
                 }
             }
 
@@ -106,81 +107,32 @@ Rally.RallyRootPage {
         }
     }
 
+    Component {
+        id: landingpageComponent
+
+        Landingpage {
+            id: landingpage
+            onNewDocument: tapeWidthPx => {}
+            onOpenDocument: fileUrl => {}
+        }
+    }
+
     Page {
 
         anchors.fill: parent
 
-        header: Row {
-            TabBar {
-                id: bar
+        StackView {
 
-                Repeater {
-                    model: swipeView.count
-
-                    TabButton {
-                        text: index
-                        width: 200
-                        rightPadding: 40
-
-                        RoundButton {
-                            width: 40
-                            height: 40
-                            flat: true
-                            icon.name: "close"
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            onClicked: {
-                                swipeView.removeItem(swipeView.itemAt(index))
-                            }
-                        }
-                    }
-                }
-            }
-
-            TabButton {
-                visible: bar.count > 0
-                checkable: false
-                width: 50
-                icon.name: "plus"
-
-                onClicked: {
-                    swipeView.addItem(landingpageComponent.createObject(swipeView))
-                }
-            }
-        }
-
-        SwipeView {
-
-            id: swipeView
+            id: stackView
             anchors.fill: parent
-            currentIndex: bar.currentIndex
-            interactive: false
 
             property Editor currentEditor: {
-                //if (swipeView.currentItem instanceof Editor) { // not working
-                if (swipeView.currentItem && swipeView.currentItem.objectName === "Editor") {
+                //if (stackView.currentItem instanceof Editor) { // not working
+                if (stackView.currentItem && stackView.currentItem.objectName === "Editor") {
                     return currentItem
                 }
                 return null
             }
         }
-
-        Component {
-            id: landingpageComponent
-
-            Landingpage {
-                id: landingpage
-                onNewDocument: tapeWidthPx => {}
-                onOpenDocument: fileUrl => {}
-            }
-        }
-
-
-        /*
-        Editor {
-            id: editor
-            anchors.fill: parent
-            tapeWidth: PrinterManager.printer.tapeWidth
-        }*/
     }
 }

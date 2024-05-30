@@ -4,7 +4,8 @@ find_package(Qt6 REQUIRED COMPONENTS Core Gui Qml Quick QuickControls2 Svg)
 find_package(MaterialRally)
 find_package(QtAppBase)
 find_package(PkgConfig)
-pkg_check_modules(libusb REQUIRED libusb-1.0)
+find_library(libUsb NAMES libusb libusb-1.0 usb usb-1.0)
+find_path(libUsbInclude NAMES libusb.h)
 
 include(AppImage)
 
@@ -16,8 +17,13 @@ qt_add_library(pTouch STATIC
         libpTouch/libptouch.c
 )
 
-target_include_directories(pTouch PRIVATE ${libusb_INCLUDE_DIRS})
-target_link_libraries(pTouch PUBLIC ${libusb_LDFLAGS})
+target_include_directories(pTouch PUBLIC ${libUsbInclude})
+target_link_libraries(pTouch PUBLIC ${libUsb})
+if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    pkg_check_modules(libudev REQUIRED libudev)
+    target_include_directories(pTouch PRIVATE ${libudev_INCLUDE_DIRS})
+    target_link_libraries(pTouch PUBLIC ${libudev_LDFLAGS})
+endif ()
 
 qt_add_executable(pTouchPrint
         main.cpp
@@ -34,6 +40,10 @@ qt_add_qml_module(pTouchPrint
         TapeModel.h
         Roles.h
         Helper.h
+        FontfamiliesModel.cpp
+        FontfamiliesModel.h
+        PrinterImage.h
+        PrinterImage.cpp
 
         QML_FILES
         pTouch/main.qml
@@ -62,6 +72,9 @@ add_material_icon_theme_resource(pTouchPrint THEME_NAME material ICONS
         image
         close
         plus
+        format-italic
+        format-bold
+        format-underline
 )
 
 target_link_qml_module(pTouchPrint PRIVATE MaterialRally)

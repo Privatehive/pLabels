@@ -1,6 +1,8 @@
 import QtCore
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Controls.Material
+import QtQuick.Layouts
 import QtQuick.Dialogs
 import MaterialRally as Rally
 import pTouch
@@ -15,8 +17,7 @@ Dialog {
 
     onAboutToShow: {
 
-        const tapeIndex = tapeSelect.indexOfValue(
-                            PrinterManager.printer.tapeWidthPx)
+        const tapeIndex = tapeSelect.indexOfValue(PrinterManager.printer.tapeWidthPx)
         if (tapeIndex >= 0) {
             tapeSelect.currentIndex = tapeIndex
         } else {
@@ -28,19 +29,19 @@ Dialog {
         control.newDocument(tapeSelect.currentValue)
     }
 
-    Column {
+    contentWidth: 300
 
-        spacing: 20
+    title: qsTr("Select tape")
 
-        Label {
-            text: qsTr("Select a tape size") + ":"
-            width: control.availableWidth
-            wrapMode: Text.WordWrap
-        }
+    GridLayout {
+
+        anchors.fill: parent
+        columns: 1
 
         ComboBox {
 
             id: tapeSelect
+            Layout.fillWidth: true
 
             TapeModel {
                 id: tapeModel
@@ -49,26 +50,35 @@ Dialog {
             model: tapeModel
             textRole: "name"
             valueRole: "tapeWidthPx"
-            width: control.availableWidth
             displayText: (PrinterManager.printer.ready
-                          && PrinterManager.printer.tapeWidthPx
-                          === currentValue) ? currentText + " (" + qsTr(
-                                                  "loaded in printer") + ")" : currentText
+                          && PrinterManager.printer.tapeWidthPx === currentValue) ? currentText + " (" + qsTr(
+                                                                                        "inserted") + ")" : currentText
             delegate: ItemDelegate {
                 text: (PrinterManager.printer.ready
-                       && PrinterManager.printer.tapeWidthPx
-                       === tapeWidthPx) ? name + " (" + qsTr(
-                                              "loaded in printer") + ")" : name
+                       && PrinterManager.printer.tapeWidthPx === tapeWidthPx) ? name + " (" + qsTr(
+                                                                                    "inserted") + ")" : name
                 width: parent.width
             }
         }
 
-        Rally.IconLabel {
-            icon.name: "alert"
-            icon.color: "orange"
-            visible: PrinterManager.printer.ready
-                     && tapeSelect.currentValue !== PrinterManager.printer.tapeWidthPx
-            text: qsTr("does not match the tape loaded in the printer!")
+        RowLayout {
+
+            Layout.fillWidth: true
+            visible: PrinterManager.printer.ready && tapeSelect.currentValue !== PrinterManager.printer.tapeWidthPx
+
+            Rally.Icon {
+
+                icon.name: "alert"
+                icon.color: Material.color(Material.Yellow)
+            }
+
+            Label {
+
+                Layout.fillWidth: true
+                text: qsTr("The selected tape size does not match the inserted tape in the printer (%1 mm).").arg(
+                          PrinterManager.printer.tapeWidthMm)
+                wrapMode: Text.WordWrap
+            }
         }
     }
 

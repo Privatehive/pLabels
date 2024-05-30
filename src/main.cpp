@@ -1,5 +1,6 @@
 #include "AdvancedQmlApplicationEngine.h"
 #include "QtApplicationBase.h"
+#include "settings.h"
 #include <QGuiApplication>
 #include <QIcon>
 #include <QQuickStyle>
@@ -7,6 +8,7 @@
 #ifdef Q_OS_WINDOWS
 #include "qt_windows.h"
 #endif
+
 
 int main(int argc, char **argv) {
 

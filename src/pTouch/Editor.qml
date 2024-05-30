@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import Qt5Compat.GraphicalEffects
+import pTouch
 
 Page {
 
@@ -33,13 +34,37 @@ Page {
 
     padding: 0
 
-    header: ToolBar {
-        Row {
-            anchors.fill: parent
-            spacing: 2
+    Component {
+        id: textToolbarComponent
+
+        ToolBar {
+            ComboBox {
+
+                width: 400
+                height: parent.height
+                editable: true
+                selectTextByMouse: true
+
+                FontfamiliesModel {
+                    id: fontfalimies
+                }
+
+                model: fontfalimies
+                textRole: "family"
+            }
 
             ToolButton {
-                icon.name: "file"
+                icon.name: "format-bold"
+                display: AbstractButton.IconOnly
+            }
+
+            ToolButton {
+                icon.name: "format-italic"
+                display: AbstractButton.IconOnly
+            }
+
+            ToolButton {
+                icon.name: "format-underline"
                 display: AbstractButton.IconOnly
             }
         }
@@ -130,6 +155,7 @@ Page {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
+        policy: size < 1.0 ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
     }
 
     background: Rectangle {

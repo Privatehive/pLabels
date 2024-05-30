@@ -1,0 +1,15 @@
+[settings]
+os=Windows
+arch=x86_64
+compiler=gcc
+compiler.version=12
+compiler.libcxx=libstdc++11
+compiler.threads=posix
+compiler.exception=seh
+build_type=Release
+[options]
+qt/*:shared=False
+qtappbase/*:shared=False
+materialrally/*:shared=False
+[tool_requires]
+mingw-builds/11.2.0

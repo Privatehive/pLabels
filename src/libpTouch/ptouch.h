@@ -17,12 +17,8 @@
   Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 */
 #pragma once
-#include <stdint.h>
-#ifdef __FreeBSD__
 #include <libusb.h>
-#else
-#include <libusb-1.0/libusb.h>
-#endif
+#include <stdint.h>
 
 struct _pt_tape_info {
 	uint8_t mm; /* Tape width in mm */

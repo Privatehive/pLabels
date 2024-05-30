@@ -26,7 +26,8 @@ class QtAppBaseConan(ConanFile):
     homepage = jsonInfo["homepage"]
     url = jsonInfo["repository"]
     # ---Requirements---
-    requires = ["qt/6.7.0@%s/stable" % user,
+    requires = ["libusb/1.0.26@",
+                "qt/6.7.1@%s/stable" % user,
                 "qtappbase/[~1]@%s/snapshot" % user,
                 "materialrally/[~1]@%s/snapshot" % user]
     tool_requires = ["cmake/3.21.7", "ninja/1.11.1"]
@@ -58,7 +59,7 @@ class QtAppBaseConan(ConanFile):
         for require, dependency in self.dependencies.items():
             path = dependency.runenv_info.vars(self, scope='run').get("QML_IMPORT_PATH")
             if path is not None:
-                qml_import_path.append(path)
+                qml_import_path.append(path.replace(os.sep, '/'))
         tc.variables["QT_QML_OUTPUT_DIRECTORY"] = "${CMAKE_CURRENT_LIST_DIR}/src"
         qml_import_path.append("${QT_QML_OUTPUT_DIRECTORY}")
         tc.variables["QML_IMPORT_PATH"] = ";".join(qml_import_path)
@@ -72,4 +73,4 @@ class QtAppBaseConan(ConanFile):
 
     def package(self):
         cmake = CMake(self)
-        cmake.install()
+        cmake.install(cli_args=["--strip"])
