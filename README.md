@@ -39,4 +39,8 @@ on [ptouch-print](https://dominic.familie-radermacher.ch/projekte/ptouch-print/)
 
 ### Usage
 
+Just running pLabels AppImage should be enough but...
 
+* If the printer is not found, put this
+  [71-brother-ptouch.rules](https://github.com/Privatehive/pLabels/blob/40ed233bdd0af4f758ec179224aff3cd95a1435e/share/71-brother-ptouch.rules)
+  udev rule file into the /etc/udev/rules.d dir
