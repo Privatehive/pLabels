@@ -96,3 +96,11 @@ int print_img(ptouch_dev ptdev, const uint8_t *img, int width, int height, int b
 	}
 	return 0;
 }
+
+int supports_hot_plug() {
+
+	if(libusb_init(NULL) == 0) {
+		return libusb_has_capability(LIBUSB_CAP_HAS_HOTPLUG);
+	}
+	return 0;
+}

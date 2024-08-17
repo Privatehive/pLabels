@@ -11,7 +11,7 @@ from conan.tools.env import VirtualBuildEnv
 required_conan_version = ">=2.0"
 
 
-class QtAppBaseConan(ConanFile):
+class pLabelsConan(ConanFile):
     jsonInfo = json.load(open("info.json", 'r'))
     # ---Package reference---
     name = jsonInfo["projectName"].lower()
@@ -26,31 +26,50 @@ class QtAppBaseConan(ConanFile):
     homepage = jsonInfo["homepage"]
     url = jsonInfo["repository"]
     # ---Requirements---
-    requires = ["libusb/1.0.26@",
-                "qt/6.7.1@%s/stable" % user,
+    requires = ["qt/6.7.2@%s/stable" % user,
                 "qtappbase/[~1]@%s/snapshot" % user,
                 "materialrally/[~1]@%s/snapshot" % user]
-    tool_requires = ["cmake/3.21.7", "ninja/1.11.1"]
+    tool_requires = ["cmake/[>=3.21.7]", "ninja/[>=1.11.1]"]
     # ---Sources---
     exports = ["info.json", "LICENSE"]
-    exports_sources = ["info.json", "*.txt", "src/*"]
+    exports_sources = ["info.json", "LICENSE", "*.txt", "src/*"]
     # ---Binary model---
     settings = "os", "compiler", "build_type", "arch"
-    options = {}
+    options = {"shared": [True, False], "fPIC": [True, False], "lto": [True, False]}
     default_options = {
+        "shared": True,
+        "fPIC": True,
+        "lto": False,
         "qtappbase/*:qml": True,
         "qt/*:GUI": True,
         "qt/*:opengl": "desktop",
         "qt/*:qtbase": True,
-        "qt/*:widgets": True,
         "qt/*:qtdeclarative": True,
         "qt/*:qtsvg": True,
         "qt/*:qttranslations": True,
-        "qt/*:qt5compat": True}
+        "qt/*:qt5compat": True,
+        "qt/*:quick2style": "material"}
     # ---Build---
     generators = []
     # ---Folders---
     no_copy_source = False
+
+    def requirements(self):
+        if self.settings.os == "Windows":
+            self.requires("libusb-bin/1.0.27@%s/stable" % self.user)
+        else:
+            self.requires("libusb/1.0.26@")
+
+    def configure(self):
+        self.options["qt"].lto = self.options.lto
+        self.options["qtappbase"].lto = self.options.lto
+        self.options["materialrally"].lto = self.options.lto
+        self.options["qt"].shared = self.options.shared
+        self.options["qtappbase"].shared = self.options.shared
+        self.options["materialrally"].shared = self.options.shared
+        self.options["qt"].fPIC = self.options.fPIC
+        self.options["qtappbase"].fPIC = self.options.fPIC
+        self.options["materialrally"].fPIC = self.options.fPIC
 
     def generate(self):
         ms = VirtualBuildEnv(self)
@@ -63,6 +82,7 @@ class QtAppBaseConan(ConanFile):
         tc.variables["QT_QML_OUTPUT_DIRECTORY"] = "${CMAKE_CURRENT_LIST_DIR}/src"
         qml_import_path.append("${QT_QML_OUTPUT_DIRECTORY}")
         tc.variables["QML_IMPORT_PATH"] = ";".join(qml_import_path)
+        tc.variables["CMAKE_INTERPROCEDURAL_OPTIMIZATION"] = self.options.lto
         tc.generate()
         ms.generate()
 
@@ -73,4 +93,7 @@ class QtAppBaseConan(ConanFile):
 
     def package(self):
         cmake = CMake(self)
-        cmake.install(cli_args=["--strip"])
+        if self.settings.build_type == 'Release':
+            cmake.install(cli_args=["--strip"])
+        else:
+            cmake.install()

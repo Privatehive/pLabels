@@ -26,6 +26,7 @@ Dialog {
     }
 
     onAccepted: {
+        control.standardButton(Dialog.Ok).enabled = false
         control.newDocument(tapeSelect.currentValue)
     }
 

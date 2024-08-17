@@ -21,6 +21,17 @@ FocusScope {
     property var rightAboutToChange: right => right
     property var bottomAboutToChange: bottom => bottom
 
+    signal changed
+
+    activeFocusOnTab: true
+
+    onActiveFocusChanged: {
+
+        if (control.activeFocus) {
+            control.selected = true
+        }
+    }
+
     implicitHeight: {
         if (holder.children[0]) {
             return holder.children[0].implicitHeight
@@ -35,10 +46,15 @@ FocusScope {
         return 0
     }
 
-    onFocusChanged: {
-        if (!control.focus) {
+    onSelectedChanged: {
+
+        if (control.selected) {
+            priv.zBackup = control.z
+            control.z = Number.MAX_VALUE
+        } else {
             control.activated = false
-            control.selected = false
+            control.focus = false
+            control.z = priv.zBackup
         }
     }
 
@@ -246,6 +262,8 @@ FocusScope {
 
         id: priv
 
+        property real zBackup: 0.0
+
         function apply(rect, forceChange) {
 
             const leftOutOfBounds = function (rect) {
@@ -362,6 +380,10 @@ FocusScope {
                     rect.height = control.bounds.height - rect.y
                 }
                 control.height = Math.min(rect.height, control.bounds.height)
+            }
+
+            if (xChanged || yChanged || widthChanged || heightChanged) {
+                control.changed()
             }
         }
     }

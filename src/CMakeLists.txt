@@ -7,8 +7,6 @@ find_package(PkgConfig)
 find_library(libUsb NAMES libusb libusb-1.0 usb usb-1.0)
 find_path(libUsbInclude NAMES libusb.h)
 
-include(AppImage)
-
 qt_add_library(pTouch STATIC
         libpTouch/gettext.h
         libpTouch/ptouch.h
@@ -25,11 +23,11 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     target_link_libraries(pTouch PUBLIC ${libudev_LDFLAGS})
 endif ()
 
-qt_add_executable(pTouchPrint
+qt_add_executable(pLabels
         main.cpp
 )
 
-qt_add_qml_module(pTouchPrint
+qt_add_qml_module(pLabels
         URI
         pTouch
 
@@ -46,7 +44,7 @@ qt_add_qml_module(pTouchPrint
         PrinterImage.cpp
 
         QML_FILES
-        pTouch/main.qml
+        pTouch/Main.qml
         pTouch/ResizableRectangle.qml
         pTouch/ResizeGrabber.qml
         pTouch/Editor.qml
@@ -54,33 +52,49 @@ qt_add_qml_module(pTouchPrint
         pTouch/TapeSelectDialog.qml
         pTouch/PrintDialog.qml
         pTouch/Viewport.qml
+        pTouch/TextComponent.qml
+        pTouch/SaveDialog.qml
+        pTouch/OpenFileDialog.qml
+        pTouch/ContinueDialog.qml
+        pTouch/EditorToolBar.qml
+        pTouch/PrinterInfoDialog.qml
 )
 
-add_material_icon_theme_resource(pTouchPrint THEME_NAME material ICONS
+add_material_icon_theme_resource(pLabels THEME_NAME material ICONS
+        file
+        file-document
+        file-question
         folder-open
         content-save
+        content-save-settings
         printer
         printer-check
         printer-off
         printer-alert
         alert
+        delete
         text
-        file
         qrcode
         barcode
         shape
+        script
         image
         close
         plus
+        rotate-left-variant
+        rotate-right-variant
         format-italic
         format-bold
         format-underline
+        format-align-center
+        format-align-left
+        format-align-right
 )
 
-target_link_qml_module(pTouchPrint PRIVATE MaterialRally)
+target_link_qml_module(pLabels PRIVATE MaterialRally)
 
-target_include_directories(pTouchPrint PRIVATE "libpTouch")
+target_include_directories(pLabels PRIVATE "libpTouch")
 
-target_link_libraries(pTouchPrint PRIVATE Qt6::Core PRIVATE Qt6::Gui PRIVATE Qt6::Qml PRIVATE Qt6::Quick PRIVATE Qt6::QuickControls2 PRIVATE Qt6::Svg PRIVATE QtAppBase PRIVATE pTouch)
+target_link_libraries(pLabels PRIVATE Qt6::Core PRIVATE Qt6::Gui PRIVATE Qt6::Qml PRIVATE Qt6::Quick PRIVATE Qt6::QuickControls2 PRIVATE Qt6::Svg PRIVATE QtAppBase PRIVATE pTouch)
 
-install_app(pTouchPrint)
+install_app(pLabels)

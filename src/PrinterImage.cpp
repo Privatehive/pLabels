@@ -2,7 +2,6 @@
 #include <QPainter>
 #include <QSGImageNode>
 
-
 PrinterImage::PrinterImage(QQuickItem *parent) : QQuickItem(parent), mImage(), mDithering(false) {
 
 	setFlag(ItemHasContents);

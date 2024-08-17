@@ -5,14 +5,14 @@
     "patch": 0,
     "snapshot": true
   },
-  "projectName": "pTouchPrint",
-  "projectDescription": "",
+  "projectName": "pLabels",
+  "projectDescription": "Create labels and print them on Brother P-touch® printers",
   "projectId": 1712753753,
   "vendor": "Björn Stresing",
   "contact": "bjoern.stresing@gmx.de",
-  "domain": "com.github.tereius",
+  "domain": "de.privatehive",
   "copyrightYear": "2024",
-  "repository": "https://github.com/Tereius/pTouchPrint",
+  "repository": "https://github.com/Privatehive/pLabel",
   "topics": [
     "Qt",
     "QML",
@@ -20,6 +20,9 @@
     "Brother",
     "Label Maker"
   ],
-  "homepage": "https://github.com/Tereius/pTouchPrint",
+  "categories": [
+    "Graphics"
+  ],
+  "homepage": "https://github.com/Privatehive/pLabel",
   "license": "GPLv3"
 }

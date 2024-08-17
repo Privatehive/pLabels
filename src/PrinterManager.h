@@ -12,11 +12,11 @@ class Printer {
 	Q_PROPERTY(bool ready MEMBER ready)
 
  public:
-	QString id;
-	QString name;
-	int tapeWidthPx;
-	int tapeWidthMm;
-	bool ready;
+	QString id = "";
+	QString name = "";
+	int tapeWidthPx = 0;
+	int tapeWidthMm = 0;
+	bool ready = false;
 };
 
 class PrinterManager : public QObject {
@@ -28,7 +28,11 @@ class PrinterManager : public QObject {
 
  public:
 	explicit PrinterManager(QObject *pParent = nullptr);
+	~PrinterManager() override;
 	Printer getPrinter() const;
+
+	// must be called by main thread
+	void reloadDevice();
 
 	Q_INVOKABLE void print(QVariant image);
 	Q_INVOKABLE static int getTapeMm(int tapePx);
@@ -37,7 +41,11 @@ class PrinterManager : public QObject {
  signals:
 	void printerChanged();
 
+ protected:
+	void timerEvent(QTimerEvent *event) override;
+
  private:
-	void reloadDevice();
 	Printer mPrinter;
+	int mTimerId;
+	int mCallbackHandle;
 };

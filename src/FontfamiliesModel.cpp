@@ -22,6 +22,9 @@ QVariant FontfamiliesModel::data(const QModelIndex &index, int role) const {
 			case Qt::DisplayRole:
 				ret = QVariant::fromValue(m_fontfamilies.at(row));
 				break;
+			case Qt::FontRole:
+				ret = QVariant::fromValue(QFont(m_fontfamilies.at(row)));
+				break;
 			default:
 				ret = QVariant();
 		}
@@ -33,5 +36,6 @@ QHash<int, QByteArray> FontfamiliesModel::roleNames() const {
 
 	QHash<int, QByteArray> ret;
 	ret.insert(Qt::DisplayRole, {"family"});
+	ret.insert(Qt::FontRole, {"font"});
 	return ret;
 }

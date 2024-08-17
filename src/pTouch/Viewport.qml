@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import pTouch
 
 Item {
 
@@ -9,16 +10,72 @@ Item {
     property real snapDistanceVertical: 10
 
     // onChildrenRectChanged doesn't get triggered. This is a woraround
-    readonly property rect childrenRectWorkaround: control.childrenRect
+    readonly property rect childrenRectWorkaround: {
+
+        if (control.children.length === 0) {
+            return Qt.rect(0, 0, 0, 0)
+        } else {
+            return control.childrenRect
+        }
+    }
 
     implicitWidth: control.childrenRectWorkaround.x + control.childrenRectWorkaround.width
     implicitHeight: control.childrenRectWorkaround.y + control.childrenRectWorkaround.height
+
+    signal itemSelected(ResizableRectangle item)
+    signal itemDeselected(ResizableRectangle item)
+
+    property ResizableRectangle selectedItem: null
+    property bool empty: control.children.length === 0
+
+    function iterateChildren(callback) {
+
+        for (var i = 0; i < control.children.length; i++) {
+            let child = control.children[i]
+            if (child && priv.isResizableRectangle(child)) {
+                callback(child)
+            }
+        }
+    }
+
+    onChildrenChanged: {
+
+        for (var i = 0; i < control.children.length; i++) {
+            let child = control.children[i]
+            if (child && priv.isResizableRectangle(child)) {
+                // TODO: Without disconnect the connections will add up
+                child.onSelectedChanged.connect(() => {
+                                                    if (child.selected) {
+                                                        if (control.selectedItem && control.selectedItem !== child) {
+                                                            control.itemDeselected(control.selectedItem)
+                                                        }
+
+                                                        priv.deselectOther(child)
+
+                                                        if (control.selectedItem !== child) {
+                                                            control.selectedItem = child
+                                                            control.itemSelected(child)
+                                                        }
+                                                    }
+                                                })
+            }
+        }
+    }
+
+    function deselect() {
+
+        if (control.selectedItem) {
+            control.itemDeselected(control.selectedItem)
+        }
+        priv.deselectOther(null)
+        control.selectedItem = null
+    }
 
     function grabImage(callback) {
 
         control.grabToImage(result => {
                                 callback(result)
-                            })
+                            }, Qt.size(control.width, control.height))
     }
 
     function snapLeft(item, left) {
@@ -95,5 +152,23 @@ Item {
             }
         }
         return snapLine
+    }
+
+    QtObject {
+        id: priv
+        function isResizableRectangle(item) {
+
+            return item instanceof ResizableRectangle
+        }
+
+        function deselectOther(myself) {
+
+            for (var i = 0; i < control.children.length; i++) {
+                let child = control.children[i]
+                if (child && child !== myself && priv.isResizableRectangle(child)) {
+                    child.selected = false
+                }
+            }
+        }
     }
 }

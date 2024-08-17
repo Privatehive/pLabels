@@ -2,7 +2,6 @@ import QtCore
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import QtQuick.Dialogs
 import MaterialRally as Rally
 import pTouch
 
@@ -10,16 +9,16 @@ Dialog {
 
     id: control
 
-    title: qsTr("Preview")
-
     anchors.centerIn: parent
+
+    title: qsTr("Preview")
 
     property var grabResult: null
 
     readonly property var image: grabResult ? grabResult.image : null
     readonly property var imageUrl: grabResult ? grabResult.url : null
 
-    contentWidth: Math.max(printerImage.implicitWidth, 300)
+    contentWidth: Math.min(Math.max(printerImage.implicitWidth, 300), 600)
     margins: 50
 
     GridLayout {
@@ -65,7 +64,6 @@ Dialog {
         CheckBox {
 
             id: ditheringEnabled
-            Layout.fillWidth: true
             text: qsTr("Dithering")
             Layout.row: 2
         }
@@ -73,12 +71,12 @@ Dialog {
         RowLayout {
 
             Layout.fillWidth: true
-            visible: printerImage.implicitHeight !== PrinterManager.printer.tapeWidthPx
+            visible: PrinterManager.printer.ready && printerImage.implicitHeight !== PrinterManager.printer.tapeWidthPx
 
             Rally.Icon {
 
                 icon.name: "alert"
-                icon.color: "red"
+                icon.color: Material.color(Material.Red)
             }
 
             Label {
@@ -86,6 +84,25 @@ Dialog {
                 Layout.fillWidth: true
                 text: qsTr("The label cannot be printed. It does not match the tape inserted in the printer (%1 mm). Please insert a tape with a size of %2 mm.").arg(
                           PrinterManager.printer.tapeWidthMm).arg(PrinterManager.getTapeMm(printerImage.implicitHeight))
+                wrapMode: Text.WordWrap
+            }
+        }
+
+        RowLayout {
+
+            Layout.fillWidth: true
+            visible: !PrinterManager.printer.ready
+
+            Rally.Icon {
+
+                icon.name: "alert"
+                icon.color: Material.color(Material.Red)
+            }
+
+            Label {
+
+                Layout.fillWidth: true
+                text: qsTr("No pTouch printer was found. Make sure the printer is powered on and connected via USB. Also make sure the P-light mode is disabled on the printer or the switch is on position E (depends on model)")
                 wrapMode: Text.WordWrap
             }
         }
@@ -99,7 +116,11 @@ Dialog {
             flat: true
             enabled: printerImage.implicitHeight === PrinterManager.printer.tapeWidthPx
             onClicked: {
-                PrinterManager.print(printerImage.getTransformedImage())
+                enabled = false
+                Qt.callLater(() => {
+                                 PrinterManager.print(printerImage.getTransformedImage())
+                                 enabled = true
+                             })
             }
         }
 
