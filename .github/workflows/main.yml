@@ -10,6 +10,7 @@ jobs:
       machine_type: c2d-standard-8
       conan_remotes: https://conan.privatehive.de/artifactory/api/conan/public-conan
       conan_options: "plabels/*:shared=True"
+      conan_deploy_artifacts: true
 
   build_windows:
     name: "Windows"
