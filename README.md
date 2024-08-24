@@ -41,6 +41,8 @@ on [ptouch-print](https://dominic.familie-radermacher.ch/projekte/ptouch-print/)
 
 Just running pLabels AppImage should be enough but...
 
+* Make sure [FUSE](https://github.com/AppImage/AppImageKit/wiki/FUSE) is installed.
+* If nothing happens, run pLabels from terminal. The error message provides information about the problem.
 * If the printer is not found, put this
   [71-brother-ptouch.rules](https://github.com/Privatehive/pLabels/blob/40ed233bdd0af4f758ec179224aff3cd95a1435e/share/71-brother-ptouch.rules)
   udev rule file into the /etc/udev/rules.d dir
