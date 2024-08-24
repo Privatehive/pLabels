@@ -13,8 +13,10 @@ Rally.RallyApplicationWindow {
 
     visible: true
 
-    width: 300
-    height: 300
+    width: 700
+    height: 500
+    minimumWidth: 700
+    minimumHeight: 500
 
     Component.onCompleted: {
 
@@ -24,44 +26,14 @@ Rally.RallyApplicationWindow {
     property list<string> recentFiles: []
 
     Settings {
-        property alias recentFile: control.recentFiles
+        property alias recentFiles: control.recentFiles
+        property alias x: control.x
+        property alias y: control.y
+        property alias width: control.width
+        property alias height: control.height
     }
 
-    function newEditor(tapeWidthPx, file) {
-        const editor = Rally.Helper.createItem(Qt.resolvedUrl("Editor.qml"), null, {
-                                                   "tapeWidth": tapeWidthPx ? tapeWidthPx : 18,
-                                                   "file": file ? file : ""
-                                               })
-        editor.onClose.connect(() => {
-                                   control.newContinueDialog(editor.canSave, () => {
-                                                                 control.newLandingPage()
-                                                                 editor.destroy()
-                                                             })
-                               })
-
-
-        /*
-        editor.onSaved.connect(file => {
-                                   let found = false
-                                   let recentFilesList = [file]
-
-                                   for (var i = 0; i < control.recentFiles.length; i++) {
-                                       const tmpFile = control.recentFiles[i]
-                                       if (tmpFile != file) {
-                                           recentFilesList.push(tmpFile)
-                                       }
-                                       if (recentFilesList.length === 10) {
-                                           break
-                                       }
-                                   }
-
-                                   control.recentFiles.length = 0
-                                   recentFilesList.forEach(ele => {
-                                                               control.recentFiles.push(ele)
-                                                           })
-                               })
-                               */
-        stackView.replace(editor)
+    function updateRecentFiles(file) {
 
         if (file) {
             let recentFilesList = [file]
@@ -81,6 +53,27 @@ Rally.RallyApplicationWindow {
                                         control.recentFiles.push(ele)
                                     })
         }
+    }
+
+    function newEditor(tapeWidthPx, file) {
+        const editor = Rally.Helper.createItem(Qt.resolvedUrl("Editor.qml"), null, {
+                                                   "tapeWidth": tapeWidthPx ? tapeWidthPx : 18,
+                                                   "file": file ? file : ""
+                                               })
+        editor.onClose.connect(() => {
+                                   control.newContinueDialog(editor.canSave, () => {
+                                                                 control.newLandingPage()
+                                                                 editor.destroy()
+                                                             })
+                               })
+
+        editor.onSaved.connect(file => {
+                                   control.updateRecentFiles(file)
+                               })
+
+        stackView.replace(editor)
+
+        control.updateRecentFiles(file)
     }
 
     function newLandingPage() {
