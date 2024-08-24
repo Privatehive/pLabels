@@ -1,9 +1,8 @@
 #include "AdvancedQmlApplicationEngine.h"
 #include "QtApplicationBase.h"
-#include "settings.h"
+#include "units.h"
 #include <QGuiApplication>
 #include <QIcon>
-#include <QQuickStyle>
 
 #ifdef Q_OS_WINDOWS
 #include "qt_windows.h"
@@ -38,6 +37,9 @@ int main(int argc, char **argv) {
 	qmlEngine.setHotReload(false);
 	qmlEngine.loadRootItem("qrc:/qt/qml/pTouch/pTouch/Main.qml", false);
 #endif
+
+	auto iconSize = Kirigami::Units(); // we have to force the linker to link against libMaterialRally
+	Q_UNUSED(iconSize);
 
 	return app.start();
 }
