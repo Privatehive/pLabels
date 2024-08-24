@@ -99,5 +99,5 @@ class pLabelsConan(ConanFile):
             cmake.install()
 
     def deploy(self):
-        copy(self, "%s-%s-*-installer*" % (self.name, self.version), src="./", dst=self.deploy_folder)
-        copy(self, "%s-%s-*.AppImage*" % (self.name, self.version), src="./", dst=self.deploy_folder)
+        copy(self, "%s-%s-*-installer*" % (self.name, self.version), src=self.package_folder, dst=self.deploy_folder)
+        copy(self, "%s-%s-*.AppImage*" % (self.name, self.version), src=self.package_folder, dst=self.deploy_folder)
