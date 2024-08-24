@@ -45,6 +45,7 @@ class pLabelsConan(ConanFile):
         "qt/*:opengl": "desktop",
         "qt/*:qtbase": True,
         "qt/*:qtdeclarative": True,
+        "qt/*:qtwayland": True,
         "qt/*:qtsvg": True,
         "qt/*:qttranslations": True,
         "qt/*:qt5compat": True,
