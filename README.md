@@ -15,7 +15,7 @@ on [ptouch-print](https://dominic.familie-radermacher.ch/projekte/ptouch-print/)
 
 ### Features
 
-* Vector based
+* Vector based editor
 * Add text boxes and customize:
     * font family
     * rotation
